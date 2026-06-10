@@ -85,7 +85,48 @@ function render(){
 }
 function openModal(name,price){selectedProduct=name+" — "+price;document.getElementById("modalProduct").textContent=selectedProduct;document.getElementById("modal").classList.add("active")}
 function closeModal(){document.getElementById("modal").classList.remove("active")}
-function submitLead(){const phone=document.getElementById("phone").value.trim();if(!phone){alert("Укажите телефон, чтобы мы могли связаться с вами.");return}alert("Заявка отправлена. Мы свяжемся с вами для уточнения наличия и итоговой цены.");closeModal()}
+async function submitLead(){
+ const phone=document.getElementById("phone").value.trim();
+ if(!phone){
+  alert("Укажите телефон, чтобы мы могли связаться с вами.");
+  return;
+ }
+
+ const payload = {
+  product: selectedProduct,
+  name: document.getElementById("name").value.trim(),
+  phone: phone,
+  email: document.getElementById("email").value.trim(),
+  telegram: document.getElementById("telegram").value.trim(),
+  comment: document.getElementById("comment").value.trim()
+ };
+
+ try {
+  const res = await fetch("https://aged-darkness-d274.9tzkv9zhz6.workers.dev/", {
+   method: "POST",
+   headers: {
+    "Content-Type": "application/json"
+   },
+   body: JSON.stringify(payload)
+  });
+
+  if(!res.ok) {
+   throw new Error("Ошибка отправки");
+  }
+
+  alert("Заявка отправлена. Мы свяжемся с вами для уточнения наличия и итоговой цены.");
+
+  document.getElementById("name").value = "";
+  document.getElementById("phone").value = "";
+  document.getElementById("email").value = "";
+  document.getElementById("telegram").value = "";
+  document.getElementById("comment").value = "";
+
+  closeModal();
+ } catch(e) {
+  alert("Не удалось отправить заявку. Попробуйте ещё раз или напишите нам напрямую.");
+ }
+}
 render();
 </script>
 </body></html>
